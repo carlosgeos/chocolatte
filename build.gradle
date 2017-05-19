@@ -19,14 +19,33 @@ repositories {
     jcenter()
 }
 
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Chocolatte',
+        'Implementation-Version': 1.0,
+        'Main-Class': 'App'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     compile 'com.google.guava:guava:21.0'
     // https://mvnrepository.com/artifact/org.choco-solver/choco-solver
     compile group: 'org.choco-solver', name: 'choco-solver', version: '4.0.3'
+    // https://mvnrepository.com/artifact/net.sourceforge.argparse4j/argparse4j
+    compile group: 'net.sourceforge.argparse4j', name: 'argparse4j', version: '0.7.0'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+}
+
+// Configure run task to accept arguments
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
 }
 
 // Define the main class for the application
