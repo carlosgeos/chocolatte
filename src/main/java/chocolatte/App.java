@@ -1,6 +1,7 @@
 package chocolatte;
 
 import chocolatte.Domination;
+import chocolatte.BoardDomination;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
@@ -198,6 +199,8 @@ public class App {
             .help("Solve the independence problem");
         indom.addArgument("-d").action(Arguments.storeTrue())
             .help("Solve the domination problem");
+        indom.addArgument("-bd").action(Arguments.storeTrue())
+            .help("Solve the board domination problem");
         parser.addArgument("-n")
             .type(Integer.class)
             .help("Generate a chess board NxN")
@@ -232,7 +235,10 @@ public class App {
 
         app.createPieces(board_size, rook, bishop, knight);
         Solution sol = null;
-        if (domination) {
+        if (ns.getBoolean("bd")) {
+            BoardDomination bd = new BoardDomination(board_size);
+            sol = bd.exec();
+        } if (domination) {
             Domination dom = new Domination(board_size, rook, bishop, knight);
             sol = dom.exec();
             // sol = app.domination(board_size, rook, bishop, knight);
