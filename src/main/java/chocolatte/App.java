@@ -1,3 +1,7 @@
+package chocolatte;
+
+import chocolatte.Domination;
+
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.Solution;
@@ -201,15 +205,15 @@ public class App {
         parser.addArgument("-t")
             .type(Integer.class)
             .help("Number of rooks to place on board")
-            .setDefault(2);
+            .setDefault(0);
         parser.addArgument("-f")
             .type(Integer.class)
             .help("Number of bishops to place on board")
-            .setDefault(2);
+            .setDefault(0);
         parser.addArgument("-c")
             .type(Integer.class)
             .help("Number of knights to place on board")
-            .setDefault(2);
+            .setDefault(0);
         parser.epilog("Usage with Gradle: \n$ gradle run -PappArgs['-flag1', '-arg2 x', 'option3']");
         Namespace ns = null;
         try {
@@ -229,7 +233,9 @@ public class App {
         app.createPieces(board_size, rook, bishop, knight);
         Solution sol = null;
         if (domination) {
-            sol = app.domination(board_size, rook, bishop, knight);
+            Domination dom = new Domination(board_size, rook, bishop, knight);
+            sol = dom.exec();
+            // sol = app.domination(board_size, rook, bishop, knight);
         } else {
             sol = app.independance(board_size, rook, bishop, knight);
         }
