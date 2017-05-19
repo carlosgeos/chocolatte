@@ -26,33 +26,6 @@ public class App {
         }
     }
 
-    public void domination(int n, int rook, int bishop, int knight) {
-        Model model = new Model("Domination problem");
-
-        // Creation of rooks
-        IntVar[][] rooks = new IntVar[rook][2];
-        for (int r = 0; r < rook; r++) {
-            rooks[r][0] = model.intVar("R_" + r + "_x", 0, n - 1);
-            rooks[r][1] = model.intVar("R_" + r + "_y", 0, n - 1);
-        }
-
-        // Creation of bishops
-        IntVar[][] bishops = new IntVar[bishop][2];
-        for (int b = 0; b < bishop; b++) {
-            bishops[b][0] = model.intVar("B_" + b + "_x", 0, n - 1);
-            bishops[b][1] = model.intVar("B_" + b + "_y", 0, n - 1);
-        }
-
-        // Creation of knights
-        IntVar[][] knights = new IntVar[knight][2];
-        for (int k = 0; k < knight; k++) {
-            knights[k][0] = model.intVar("K_" + k + "_x", 0, n - 1);
-            knights[k][1] = model.intVar("K_" + k + "_y", 0, n - 1);
-        }
-
-        // TODO Condition creation.
-    }
-
     private void rook_constraints(Model model, IntVar[] a, IntVar[] b) {
         model.arithm(a[0], "!=", b[0]).post();
         model.arithm(a[1], "!=", b[1]).post();
@@ -75,51 +48,29 @@ public class App {
         }
     }
 
+    private void knight_case_constraints(Model model, IntVar[] a, IntVar[] b, String o1, int d1, String o2, int d2) {
+        model.or(
+            model.arithm(a[0], "!=", b[0], o1, d1),
+            model.arithm(a[1], "!=", b[1], o2, d2)
+        ).post();
+    
+    }
+
     private void knight_constraints(Model model, IntVar[] a, IntVar[] b) {
         model.or(
             model.arithm(a[0], "!=", b[0]),
             model.arithm(a[1], "!=", b[1])
         ).post();
 
-        model.or(
-            model.arithm(a[0], "!=", b[0], "+", 2),
-            model.arithm(a[1], "!=", b[1], "+", 1)
-        ).post();
+        knight_case_constraints(model, a, b, "+", 2, "+", 1);
+        knight_case_constraints(model, a, b, "+", 2, "-", 1);
+        knight_case_constraints(model, a, b, "-", 2, "-", 1);
+        knight_case_constraints(model, a, b, "-", 2, "+", 1);
 
-        model.or(
-            model.arithm(a[0], "!=", b[0], "+", 2),
-            model.arithm(a[1], "!=", b[1], "-", 1)
-        ).post();
-
-        model.or(
-            model.arithm(a[0], "!=", b[0], "-", 2),
-            model.arithm(a[1], "!=", b[1], "-", 1)
-        ).post();
-
-        model.or(
-            model.arithm(a[0], "!=", b[0], "-", 2),
-            model.arithm(a[1], "!=", b[1], "+", 1)
-        ).post();
-
-        model.or(
-            model.arithm(a[0], "!=", b[0], "+", 1),
-            model.arithm(a[1], "!=", b[1], "+", 2)
-        ).post();
-
-        model.or(
-            model.arithm(a[0], "!=", b[0], "+", 1),
-            model.arithm(a[1], "!=", b[1], "-", 2)
-        ).post();
-
-        model.or(
-            model.arithm(a[0], "!=", b[0], "-", 1),
-            model.arithm(a[1], "!=", b[1], "-", 2)
-        ).post();
-
-        model.or(
-            model.arithm(a[0], "!=", b[0], "-", 1),
-            model.arithm(a[1], "!=", b[1], "+", 2)
-        ).post();
+        knight_case_constraints(model, a, b, "+", 1, "+", 2);
+        knight_case_constraints(model, a, b, "+", 1, "-", 2);
+        knight_case_constraints(model, a, b, "-", 1, "-", 2);
+        knight_case_constraints(model, a, b, "-", 1, "+", 2);
     }
 
     private void knights_constraints(Model model, IntVar[] current, IntVar[][] other) {
