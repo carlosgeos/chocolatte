@@ -1,7 +1,6 @@
 package chocolatte;
 
 import chocolatte.Domination;
-import chocolatte.BoardDomination;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;

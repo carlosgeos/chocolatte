@@ -1,7 +1,6 @@
 package chocolatte;
 
 import chocolatte.Domination;
-import chocolatte.BoardDomination;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
@@ -72,17 +71,20 @@ public class App {
         Solution sol = null;
 
         if (minimum_knights) {
-            BoardDomination bd = new BoardDomination(boardSize);
-            sol = bd.exec();
-            System.out.println(sol);
+            chessBoard.createPotentialKnights();
+            MinimalKnights min = new MinimalKnights(chessBoard);
+            sol = min.exec();
+            chessBoard.printKnightsBoard(sol);
         } else if (domination) {
+            chessBoard.createPieces();
             Domination dom = new Domination(chessBoard);
             sol = dom.exec();
-            // sol = app.domination(boardSize, rook, bishop, knight);
+            chessBoard.printSolutionBoard(sol);
         } else {
+            chessBoard.createPieces();
             Independence ind = new Independence(chessBoard);
             sol = ind.exec();
+            chessBoard.printSolutionBoard(sol);
         }
-        chessBoard.printSolutionBoard(sol);
     }
 }

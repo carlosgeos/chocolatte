@@ -12,26 +12,22 @@ import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.BoolVar;
 
 public class MinimalKnights {
-    private int size;
-    private Model model;
-    private BoolVar[][] board;
+    private Board board;
 
     private BoolVar knight_case_constraints(int i, int j, int d1, int d2) {
-        if ((i + d1 >= 0 && i + d1 < this.size)
-                && (j + d2 >= 0 && j + d2 < this.size)) {
-            return this.board[i + d1][j + d2];
+        if ((i + d1 >= 0 && i + d1 < board.boardSize)
+                && (j + d2 >= 0 && j + d2 < board.boardSize)) {
+            return board.knightsLocation[i + d1][j + d2];
         } else {
-            return this.board[i][j];
+            return board.knightsLocation[i][j];
         }
     }
 
     public Solution exec() {
-        IntVar total = model.intVar("total", 0, size*size);
-
-        for (int i = 0; i < this.size; ++i) {
-            for (int j = 0; j < this.size; ++j) {
-                this.model.or(
-                    this.board[i][j],
+        for (int i = 0; i < board.boardSize; ++i) {
+            for (int j = 0; j < board.boardSize; ++j) {
+                board.model.or(
+                    board.knightsLocation[i][j],
                     knight_case_constraints(i, j, 2, 1),
                     knight_case_constraints(i, j, 2, -1),
                     knight_case_constraints(i, j, -2, -1),
@@ -45,23 +41,15 @@ public class MinimalKnights {
         }
 
         // Flatten matrix to list.
-        BoolVar[] vars = Arrays.stream(this.board)
+        BoolVar[] vars = Arrays.stream(board.knightsLocation)
             .flatMap(listContainer -> Arrays.stream(listContainer))
             .toArray(size -> new BoolVar[size]);
 
-        this.model.sum(vars, "+", total).post();
-        return this.model.getSolver().findOptimalSolution(total, Model.MINIMIZE);
+        board.model.sum(vars, "+", board.totalKnights).post();
+        return board.model.getSolver().findOptimalSolution(board.totalKnights, Model.MINIMIZE);
     }
 
-    public MinimalKnights(int n) {
-        this.size = n;
-        this.model = new Model("Board Domination problem");
-
-        this.board = new BoolVar[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                this.board[i][j] = model.boolVar("k_" + i + "_" + j);
-            }
-        }
+    public MinimalKnights(Board board) {
+        this.board = board;
     }
 }
