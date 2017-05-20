@@ -238,6 +238,7 @@ public class App {
         if (ns.getBoolean("bd")) {
             BoardDomination bd = new BoardDomination(board_size);
             sol = bd.exec();
+            System.out.println(sol);
         } if (domination) {
             Domination dom = new Domination(board_size, rook, bishop, knight);
             sol = dom.exec();

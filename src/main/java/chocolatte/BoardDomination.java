@@ -16,15 +16,40 @@ public class BoardDomination {
     private Model model;
     private BoolVar[][] board;
 
+    private BoolVar knight_case_constraints(int i, int j, int d1, int d2) {
+        if ((i + d1 >= 0 && i + d1 < this.size) 
+                && (j + d2 >= 0 && j + d2 < this.size)) {
+            return this.board[i + d1][j + d2];
+        } else {
+            return this.board[i][j];
+        }
+    }
+
     public Solution exec() {
         IntVar total = model.intVar("total", 0, size*size);
+
+        for (int i = 0; i < this.size; ++i) {
+            for (int j = 0; j < this.size; ++j) {
+                this.model.or(
+                    this.board[i][j],
+                    knight_case_constraints(i, j, 2, 1),
+                    knight_case_constraints(i, j, 2, -1),
+                    knight_case_constraints(i, j, -2, -1),
+                    knight_case_constraints(i, j, -2, 1),
+                    knight_case_constraints(i, j, 1, 2),
+                    knight_case_constraints(i, j, 1, -2),
+                    knight_case_constraints(i, j, -1, -2),
+                    knight_case_constraints(i, j, -1, 2)
+                ).post();
+            }
+        }
 
         // Flatten matrix to list.
         BoolVar[] vars = Arrays.stream(this.board)
             .flatMap(listContainer -> Arrays.stream(listContainer))
             .toArray(size -> new BoolVar[size]);
 
-        this.model.sum(vars, "+", total);
+        this.model.sum(vars, "+", total).post();
         return this.model.getSolver().findOptimalSolution(total, Model.MINIMIZE);
     }
 
