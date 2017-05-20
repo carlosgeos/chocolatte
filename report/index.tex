@@ -1,0 +1,61 @@
+\documentclass[letterpaper]{article}
+\usepackage{natbib}
+\usepackage[utf8]{inputenc}
+
+\usepackage{fullpage,epsf,fancyheadings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+\usepackage{amsmath}
+\usepackage[tocage]{appendix}
+\usepackage[frenchb]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{placeins, latexsym, amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\begin{document}
+ \begin{titlepage}
+ \begin{tikzpicture}[remember picture, overlay]
+   \node [anchor=north east, inner sep=0pt]  at (current page.north east)
+      {\includegraphics[height=3cm]{Baniere_ULB.png}};
+ \end{tikzpicture}
+ \begin{center}
+ \textbf{\textsc{UNIVERSIT\'E LIBRE DE BRUXELLES}}\\
+ \textbf{\textsc{Faculté des Sciences}}\\
+ \textbf{\textsc{Département d'Informatique}}
+ \vfill{}\vfill{}
+ \begin{center}{\Huge INFO-F-302 Informatique Fondamentale: Rapport de projet}\end{center}{\Huge \par}
+ \begin{center}{\large \textsc{Perale} Thomas\\\textsc{Requena} Carlos}\end{center}{\Huge \par}
+ \vfill{}\vfill{}
+ \vfill{}\vfill{}\enlargethispage{3cm}
+
+ \begin{figure} [h!]
+             \centering
+     \includegraphics[width=4cm]{Sigle_ULB.png}
+ \end{figure}
+
+ \textbf{Année académique 2016~-~2017}
+ \end{center}
+
+ \end{titlepage}
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+
+Le but du projet est de modéliser des problèmes de satisfaction de contraintes
+à l'aide de l'outil de résolution de contraintes \emph{Chocosolver}. Pour celà
+on nous présente plusieurs problèmes en un premier temps basé sur un échiquier
+et la modélisation des pièces de celui-ci. En un deuxième temps basé sur la
+disposition d'un musée et de l'emplacement que doivent avoir les cameras dans
+celui-ci.
+
+\section{Question 1: Le problème d'indépendance}
+\section{Question 2: Le problème de domination}
+\section{Question 4: Les chevaliers minimum}
+\section{Question 5: La surveillance de musée}
+
+\end{document}
