@@ -38,7 +38,7 @@ public class Domination {
             return this.model.or(constraints);
         }
 
-        return null;
+        return this.model.falseConstraint();
     }
 
     private Constraint bishop_constraints(IntVar[] a, IntVar[] b) {
@@ -60,7 +60,7 @@ public class Domination {
             return this.model.or(constraints);
         }
 
-        return null;
+        return this.model.falseConstraint();
     }
 
     private Constraint knight_case_constraints(IntVar[] a, IntVar[] b, String o1, int d1, String o2, int d2) {
@@ -97,7 +97,7 @@ public class Domination {
             return this.model.or(constraints);
         }
 
-        return null;
+        return this.model.falseConstraint();
     }
 
     public Solution exec() {
@@ -108,7 +108,7 @@ public class Domination {
                     rooks_constraints(this.rooks[i], this.bishops),
                     rooks_constraints(this.rooks[i], this.knights)
                 ).post();
-            } else {
+            } else if (this.knights.length > 0 || this.bishops.length > 0){
                 this.model.or(
                     rooks_constraints(this.rooks[i], this.bishops),
                     rooks_constraints(this.rooks[i], this.knights)
@@ -123,7 +123,7 @@ public class Domination {
                     bishops_constraints(this.bishops[i], this.rooks),
                     bishops_constraints(this.bishops[i], this.knights)
                 ).post();
-            } else {
+            } else if (this.knights.length > 0 || this.rooks.length > 0){
                 this.model.or(
                     bishops_constraints(this.bishops[i], this.rooks),
                     bishops_constraints(this.bishops[i], this.knights)
@@ -138,7 +138,7 @@ public class Domination {
                     knights_constraints(this.knights[i], this.rooks),
                     knights_constraints(this.knights[i], this.bishops)
                 ).post();
-            } else {
+            } else if (this.bishops.length > 0 || this.rooks.length > 0){
                 this.model.or(
                     knights_constraints(this.knights[i], this.rooks),
                     knights_constraints(this.knights[i], this.bishops)
