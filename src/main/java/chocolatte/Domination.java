@@ -10,23 +10,22 @@ import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 
+import chocolatte.Board;
+
 public class Domination {
-    private Model model;
-    private IntVar[][] rooks;
-    private IntVar[][] bishops;
-    private IntVar[][] knights;
+    private Board board;
 
     private Constraint rook_constraints(IntVar[] a, IntVar[] b) {
         // Ensure the rook is not on the same case as the other piece.
-        this.model.or(
-            this.model.arithm(a[0], "!=", b[0]),
-            this.model.arithm(a[1], "!=", b[1])
-        ).post();
+        board.model.or(
+            board.model.arithm(a[0], "!=", b[0]),
+            board.model.arithm(a[1], "!=", b[1])
+            ).post();
 
-        return this.model.or(
-            this.model.arithm(a[0], "=", b[0]),
-            this.model.arithm(a[1], "=", b[1])
-        );
+        return board.model.or(
+            board.model.arithm(a[0], "=", b[0]),
+            board.model.arithm(a[1], "=", b[1])
+            );
     }
 
     private Constraint rooks_constraints(IntVar[] current, IntVar[][] other) {
@@ -35,20 +34,20 @@ public class Domination {
                 .map(x -> rook_constraints(current, x))
                 .toArray(size -> new Constraint[size]);
 
-            return this.model.or(constraints);
+            return board.model.or(constraints);
         }
 
-        return this.model.falseConstraint();
+        return board.model.falseConstraint();
     }
 
     private Constraint bishop_constraints(IntVar[] a, IntVar[] b) {
-        this.model.or(
-            this.model.arithm(a[0], "!=", b[0]),
-            this.model.arithm(a[1], "!=", b[1])
-        ).post();
+        board.model.or(
+            board.model.arithm(a[0], "!=", b[0]),
+            board.model.arithm(a[1], "!=", b[1])
+            ).post();
 
         IntVar y = a[1].sub(b[1]).abs().intVar();
-        return this.model.distance(a[0], b[0], "=", y);
+        return board.model.distance(a[0], b[0], "=", y);
     }
 
     private Constraint bishops_constraints(IntVar[] current, IntVar[][] other) {
@@ -57,26 +56,26 @@ public class Domination {
                 .map(x -> bishop_constraints(current, x))
                 .toArray(size -> new Constraint[size]);
 
-            return this.model.or(constraints);
+            return board.model.or(constraints);
         }
 
-        return this.model.falseConstraint();
+        return board.model.falseConstraint();
     }
 
     private Constraint knight_case_constraints(IntVar[] a, IntVar[] b, String o1, int d1, String o2, int d2) {
-        return this.model.and(
-            this.model.arithm(a[0], "=", b[0], o1, d1),
-            this.model.arithm(a[1], "=", b[1], o2, d2)
-        );
+        return board.model.and(
+            board.model.arithm(a[0], "=", b[0], o1, d1),
+            board.model.arithm(a[1], "=", b[1], o2, d2)
+            );
     }
 
     private Constraint knight_constraints(IntVar[] a, IntVar[] b) {
-        this.model.or(
-            this.model.arithm(a[0], "!=", b[0]),
-            this.model.arithm(a[1], "!=", b[1])
-        ).post();
+        board.model.or(
+            board.model.arithm(a[0], "!=", b[0]),
+            board.model.arithm(a[1], "!=", b[1])
+            ).post();
 
-        return this.model.or(
+        return board.model.or(
             knight_case_constraints(a, b, "+", 2, "+", 1),
             knight_case_constraints(a, b, "+", 2, "-", 1),
             knight_case_constraints(a, b, "-", 2, "-", 1),
@@ -85,7 +84,7 @@ public class Domination {
             knight_case_constraints(a, b, "+", 1, "-", 2),
             knight_case_constraints(a, b, "-", 1, "-", 2),
             knight_case_constraints(a, b, "-", 1, "+", 2)
-        );
+            );
     }
 
     private Constraint knights_constraints(IntVar[] current, IntVar[][] other) {
@@ -94,83 +93,62 @@ public class Domination {
                 .map(x -> knight_constraints(current, x))
                 .toArray(size -> new Constraint[size]);
 
-            return this.model.or(constraints);
+            return board.model.or(constraints);
         }
 
-        return this.model.falseConstraint();
+        return board.model.falseConstraint();
     }
 
     public Solution exec() {
-        for (int i = 0; i < this.rooks.length; i++) {
-            if (i + 1 < this.rooks.length) {
-                this.model.or(
-                    rooks_constraints(this.rooks[i], Arrays.copyOfRange(this.rooks, i + 1, this.rooks.length)),
-                    rooks_constraints(this.rooks[i], this.bishops),
-                    rooks_constraints(this.rooks[i], this.knights)
-                ).post();
-            } else if (this.knights.length > 0 || this.bishops.length > 0){
-                this.model.or(
-                    rooks_constraints(this.rooks[i], this.bishops),
-                    rooks_constraints(this.rooks[i], this.knights)
-                ).post();
+        for (int i = 0; i < board.rooks.length; i++) {
+            if (i + 1 < board.rooks.length) {
+                board.model.or(
+                    rooks_constraints(board.rooks[i], Arrays.copyOfRange(board.rooks, i + 1, board.rooks.length)),
+                    rooks_constraints(board.rooks[i], board.bishops),
+                    rooks_constraints(board.rooks[i], board.knights)
+                    ).post();
+            } else if (board.knights.length > 0 || board.bishops.length > 0){
+                board.model.or(
+                    rooks_constraints(board.rooks[i], board.bishops),
+                    rooks_constraints(board.rooks[i], board.knights)
+                    ).post();
             }
         }
 
-        for (int i = 0; i < this.bishops.length; i++) {
-            if (i + 1 < this.bishops.length) {
-                this.model.or(
-                    bishops_constraints(this.bishops[i], Arrays.copyOfRange(this.bishops, i + 1, this.bishops.length)),
-                    bishops_constraints(this.bishops[i], this.rooks),
-                    bishops_constraints(this.bishops[i], this.knights)
-                ).post();
-            } else if (this.knights.length > 0 || this.rooks.length > 0){
-                this.model.or(
-                    bishops_constraints(this.bishops[i], this.rooks),
-                    bishops_constraints(this.bishops[i], this.knights)
-                ).post();
+        for (int i = 0; i < board.bishops.length; i++) {
+            if (i + 1 < board.bishops.length) {
+                board.model.or(
+                    bishops_constraints(board.bishops[i], Arrays.copyOfRange(board.bishops, i + 1, board.bishops.length)),
+                    bishops_constraints(board.bishops[i], board.rooks),
+                    bishops_constraints(board.bishops[i], board.knights)
+                    ).post();
+            } else if (board.knights.length > 0 || board.rooks.length > 0){
+                board.model.or(
+                    bishops_constraints(board.bishops[i], board.rooks),
+                    bishops_constraints(board.bishops[i], board.knights)
+                    ).post();
             }
         }
 
-        for (int i = 0; i < this.knights.length; i++) {
-            if (i + 1 < this.knights.length) {
-                this.model.or(
-                    knights_constraints(this.knights[i], Arrays.copyOfRange(this.knights, i + 1, this.knights.length)),
-                    knights_constraints(this.knights[i], this.rooks),
-                    knights_constraints(this.knights[i], this.bishops)
-                ).post();
-            } else if (this.bishops.length > 0 || this.rooks.length > 0){
-                this.model.or(
-                    knights_constraints(this.knights[i], this.rooks),
-                    knights_constraints(this.knights[i], this.bishops)
-                ).post();
+        for (int i = 0; i < board.knights.length; i++) {
+            if (i + 1 < board.knights.length) {
+                board.model.or(
+                    knights_constraints(board.knights[i], Arrays.copyOfRange(board.knights, i + 1, board.knights.length)),
+                    knights_constraints(board.knights[i], board.rooks),
+                    knights_constraints(board.knights[i], board.bishops)
+                    ).post();
+            } else if (board.bishops.length > 0 || board.rooks.length > 0){
+                board.model.or(
+                    knights_constraints(board.knights[i], board.rooks),
+                    knights_constraints(board.knights[i], board.bishops)
+                    ).post();
             }
         }
 
-        return this.model.getSolver().findSolution();
+        return board.model.getSolver().findSolution();
     }
 
-    public Domination(int n, int rook, int bishop, int knight) {
-        this.model = new Model("Domination problem");
-
-        // Creation of rooks
-        this.rooks = new IntVar[rook][2];
-        for (int r = 0; r < rook; r++) {
-            this.rooks[r][0] = model.intVar("R_" + r + "_x", 0, n - 1);
-            this.rooks[r][1] = model.intVar("R_" + r + "_y", 0, n - 1);
-        }
-
-        // Creation of bishops
-        this.bishops = new IntVar[bishop][2];
-        for (int b = 0; b < bishop; b++) {
-            this.bishops[b][0] = model.intVar("B_" + b + "_x", 0, n - 1);
-            this.bishops[b][1] = model.intVar("B_" + b + "_y", 0, n - 1);
-        }
-
-        // Creation of knights
-        this.knights = new IntVar[knight][2];
-        for (int k = 0; k < knight; k++) {
-            this.knights[k][0] = model.intVar("K_" + k + "_x", 0, n - 1);
-            this.knights[k][1] = model.intVar("K_" + k + "_y", 0, n - 1);
-        }
+    public Domination(Board board) {
+        this.board = board;
     }
 }

@@ -11,13 +11,13 @@ import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.BoolVar;
 
-public class BoardDomination {
+public class MinimalKnights {
     private int size;
     private Model model;
     private BoolVar[][] board;
 
     private BoolVar knight_case_constraints(int i, int j, int d1, int d2) {
-        if ((i + d1 >= 0 && i + d1 < this.size) 
+        if ((i + d1 >= 0 && i + d1 < this.size)
                 && (j + d2 >= 0 && j + d2 < this.size)) {
             return this.board[i + d1][j + d2];
         } else {
@@ -53,7 +53,7 @@ public class BoardDomination {
         return this.model.getSolver().findOptimalSolution(total, Model.MINIMIZE);
     }
 
-    public BoardDomination(int n) {
+    public MinimalKnights(int n) {
         this.size = n;
         this.model = new Model("Board Domination problem");
 
