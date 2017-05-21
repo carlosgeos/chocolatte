@@ -1,6 +1,7 @@
 package chocolatte;
 
 import chocolatte.Domination;
+import chocolatte.Museum;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
@@ -33,6 +34,8 @@ public class App {
             .help("Solve the domination problem");
         indom.addArgument("-mk").action(Arguments.storeTrue())
             .help("Solve the minimum knights problem");
+        indom.addArgument("-m").action(Arguments.storeTrue())
+            .help("Solve the museum problem");
         parser.addArgument("-n")
             .type(Integer.class)
             .help("Generate a chess board NxN")
@@ -70,7 +73,12 @@ public class App {
         Board chessBoard = new Board(boardSize, rook, bishop, knight);
         Solution sol = null;
 
-        if (minimum_knights) {
+        if (ns.getBoolean("m")) {
+            chessBoard.createMuseum();
+            Museum min = new Museum(chessBoard);
+            sol = min.exec();
+            System.out.println(sol);
+        } else if (minimum_knights) {
             chessBoard.createPotentialKnights();
             MinimalKnights min = new MinimalKnights(chessBoard);
             sol = min.exec();

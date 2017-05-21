@@ -30,6 +30,9 @@ public class Board {
     // Knights-to-place
     public IntVar totalKnights;
     public BoolVar[][] knightsLocation;
+    // Museum
+    public Boolean[][] museumModel;
+    public IntVar[][] museum;
 
     public void createPieces() {
         // Creation of rooks
@@ -134,6 +137,25 @@ public class Board {
             }
         } else {
             System.out.println("NO SOLUTION TO THE GIVEN PROBLEM");
+        }
+    }
+
+    public void createMuseum() {
+        int n = 5;
+        Boolean[][] arr = {
+            {false, false, false, false, false},
+            {false,  true,  true,  true, false},
+            {false,  true, false,  true, false},
+            {false,  true,  true,  true, false},
+            {false, false, false, false, false}
+        };
+        this.museumModel = arr;
+    
+        this.museum = new IntVar[n][n];
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                this.museum[i][j] = this.model.intVar("m_" + i + "_" + j, 0, 5);
+            }
         }
     }
 
