@@ -27,13 +27,14 @@ public class Museum {
         ArrayList<IntVar> result = new ArrayList<IntVar>();
 
         for (int i = x; i >= 0; --i) {
-            if (!board.museumModel[i][y]) {
+            if (!board.museumModel[y][i]) {
                 break;
             } else {
-                result.add(board.museum[i][y]);
+                result.add(board.museum[y][i]);
             }
         }
 
+        System.out.println(result);
         return result.stream().toArray(size -> new IntVar[size]);
     }
 
@@ -48,10 +49,10 @@ public class Museum {
         ArrayList<IntVar> result = new ArrayList<IntVar>();
 
         for (int i = x; i < board.boardSize; ++i) {
-            if (!board.museumModel[i][y]) {
+            if (!board.museumModel[y][i]) {
                 break;
             } else {
-                result.add(board.museum[i][y]);
+                result.add(board.museum[y][i]);
             }
         }
 
@@ -69,10 +70,10 @@ public class Museum {
         ArrayList<IntVar> result = new ArrayList<IntVar>();
 
         for (int i = x; i >= 0; --i) {
-            if (!board.museumModel[x][i]) {
+            if (!board.museumModel[i][x]) {
                 break;
             } else {
-                result.add(board.museum[x][i]);
+                result.add(board.museum[i][x]);
             }
         }
 
@@ -90,10 +91,10 @@ public class Museum {
         ArrayList<IntVar> result = new ArrayList<IntVar>();
 
         for (int i = x; i < board.boardSize; ++i) {
-            if (!board.museumModel[x][i]) {
+            if (!board.museumModel[i][x]) {
                 break;
             } else {
-                result.add(board.museum[x][i]);
+                result.add(board.museum[i][x]);
             }
         }
 
@@ -110,7 +111,7 @@ public class Museum {
     public Solution exec() {
         for (int i = 0; i < board.boardSize; ++i) {
             for (int j = 0; j < board.boardSize; ++j) {
-                if (board.museumModel[i][j]) {
+                if (board.museumModel[j][i]) {
                     board.model.or(
                         get_constraint_ouest(i, j),
                         get_constraint_est(i, j),
@@ -118,20 +119,22 @@ public class Museum {
                         get_constraint_sud(i, j)
                     ).post();
                 } else {
-                    board.model.arithm(board.museum[i][j], "=", WALL.getValue()).post();
+                    board.model.arithm(board.museum[j][i], "=", WALL.getValue()).post();
                 }
             }
         }
 
         // Sum ouest camera + est + nord + sud
 
+        IntVar minimize = board.model.intVar("minimizing", 0, board.boardSize * board.boardSize);
         // Flatten matrix to list.
-        // BoolVar[] vars = Arrays.stream(board.knightsLocation)
-        //     .flatMap(listContainer -> Arrays.stream(listContainer))
-        //     .toArray(size -> new BoolVar[size]);
+        IntVar[] vars = Arrays.stream(board.museum)
+            .flatMap(listContainer -> Arrays.stream(listContainer))
+            .toArray(size -> new IntVar[size]);
 
-        // board.model.sum(vars, "+", board.totalKnights).post();
-        return board.model.getSolver().findSolution();
+        board.model.sum(vars, "+", minimize).post();
+        // return board.model.getSolver().findSolution();
+        return board.model.getSolver().findOptimalSolution(minimize, Model.MINIMIZE);
     }
 
     public Museum(Board board) {

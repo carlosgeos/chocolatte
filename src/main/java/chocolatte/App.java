@@ -77,7 +77,7 @@ public class App {
             chessBoard.createMuseum();
             Museum min = new Museum(chessBoard);
             sol = min.exec();
-            System.out.println(sol);
+            chessBoard.printMuseum(sol);
         } else if (minimum_knights) {
             chessBoard.createPotentialKnights();
             MinimalKnights min = new MinimalKnights(chessBoard);

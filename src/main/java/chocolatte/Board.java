@@ -140,20 +140,60 @@ public class Board {
         }
     }
 
+    public void printMuseum(Solution chocosolution) {
+        if(chocosolution != null) {
+            System.out.println(chocosolution.toString());
+            System.out.println();
+
+            // int total_knights = chocosolution.getIntVal(totalKnights);
+            // System.out.println(total_knights);
+
+            // Print based on Table chessboard
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize; j++) {
+                    if (!museumModel[i][j]) {
+                        System.out.print("* ");
+                    } else if (chocosolution.getIntVal(this.museum[i][j]) > 0) {
+                        System.out.print(chocosolution.getIntVal(this.museum[i][j]));
+                        System.out.print(" ");
+                    } else {
+                        System.out.print("  ");
+                    }
+                    if (j == boardSize - 1) {
+                        System.out.println();
+                    }
+                    ;
+                }
+            }
+        } else {
+            System.out.println("NO SOLUTION TO THE GIVEN PROBLEM");
+        }
+    }
+
     public void createMuseum() {
-        int n = 5;
+        this.boardSize = 7;
+        // Boolean[][] arr = {
+        //     {false, false, false, false, false},
+        //     {false,  true,  true,  true, false},
+        //     {false,  true, false,  true, false},
+        //     {false,  true,  true,  true, false},
+        //     {false, false, false, false, false}
+        // };
         Boolean[][] arr = {
-            {false, false, false, false, false},
-            {false,  true,  true,  true, false},
-            {false,  true, false,  true, false},
-            {false,  true,  true,  true, false},
-            {false, false, false, false, false}
+            {false, false, false, false, false, false, false},
+            {false,  true,  true,  true, false,  true, false},
+            {false,  true, false,  true, false, false, false},
+            {false,  true,  true,  true,  true,  true, false},
+            {false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false}
         };
+
         this.museumModel = arr;
     
-        this.museum = new IntVar[n][n];
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
+        this.museum = new IntVar[this.boardSize][this.boardSize];
+        for (int i = 0; i < this.boardSize; ++i) {
+            for (int j = 0; j < this.boardSize; ++j) {
                 this.museum[i][j] = this.model.intVar("m_" + i + "_" + j, 0, 5);
             }
         }
