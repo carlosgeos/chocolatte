@@ -38,7 +38,8 @@
   showspaces=false,
   showstringspaces=false,
   showtabs=false,
-  tabsize=2
+  tabsize=2,
+  caption=\lstname
 }
 
 \lstset{style=mystyle}
@@ -95,23 +96,40 @@ pièce ne menace une autre pièce.
 \subsection{Définition des variables}
 
 \begin{itemize}
-\item \textit{n} la taille de l'échiquier;
-\item \textit{t} le nombre de tour;
-\item \textit{f} le nombre de fou;
-\item \textit{c} le nombre de chevalier;
+\item $n$ la taille de l'échiquier;
+\item $k_1$ tours;
+\item $k_2$ fous;
+\item $k_3$ cavalier;
 \end{itemize}
+
+Donc nos variables sont l'union de tous les types des pièces, avec
+leur tuples indiquant: (type, coordonée$_x$, coordonée$_y$):
+
+$$ X = \{k_{1,i,j} | 1 \leq i,j < n \} \cup \{k_{2,i,j} | 1 \leq i,j
+< n \} \cup \{k_{3,i,j} | 1 \leq i,j < n \} $$
+
+Pour chaque pièce, on peut attribuer une valeur a sa valeur $i$ et
+$j$, donc le domaine de chaque variable devient:
+
+$$ D_t = \{(i,j)...(n,n)\} |\ \mathrm{pour\ tout\ type\ t\ =\ 1, 2,
+  3} \}$$
 
 \subsection{Contraintes}
 
 \begin{itemize}
 \item Chaque pièce doit occuper une case diffèrente.
-
+  $$ C_{diff} = ( \forall (k_1, k_2, k_3) ), \{ \forall (i,j) | i
+  \neq i' \land j \neq j'\} $$
 \item Aucune pièce ne peut occuper les cases situées à gauche, à
   droite, en haut et en bas des toutes les tours.
+  $$ C_t = ( \forall (k_1, k_2, k_3) ), \{ \forall (i,j) \in k_1 | i
+  \neq i' \lor j \neq j'\}$$
 \item Aucune pièce ne peut occuper les cases situées en diagonale des
   tous les fous.
+  $$ C_f = ( \forall (k_1, k_2, k_3) ), \{ \forall (i,j) \in k_2 | i
+  \neq i' \pm 1 \lor j \neq j' \pm 1\}$$
 \item Aucune pièce ne peut occuper les cases menacées par tous les
-  cavaliers (\ref{fig:cavalier})
+  cavaliers. Voir (\ref{fig:cavalier})
 \end{itemize}
 
 \begin{figure}[ht]
@@ -120,6 +138,15 @@ pièce ne menace une autre pièce.
   \includegraphics[width=5cm]{fig/cavalier.png}
   \caption{Cases menacées par un cavalier}
 \end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \label{fig:cavalier}
+  \includegraphics[width=4cm]{fig/ss-independence.png}
+  \caption{Commande: \texttt{java -jar jarfile -i -n 6}}
+\end{figure}
+
+
 
 \section{Question 2: Le problème de domination}
 
@@ -131,10 +158,10 @@ occupée soit menacée par au moins une pièce.
 \subsection{Définition des variables}
 
 \begin{itemize}
-\item \textit{n} la taille de l'échiquier;
-\item \textit{t} le nombre de tour;
-\item \textit{f} le nombre de fou;
-\item \textit{c} le nombre de chevalier;
+\item $n$ la taille de l'échiquier;
+\item $k_1$ tours;
+\item $k_2$ fous;
+\item $k_3$ cavalier;
 \end{itemize}
 
 \subsection{Contraintes}
@@ -149,6 +176,13 @@ occupée soit menacée par au moins une pièce.
   \item les cases menacées par tous les cavaliers (\ref{fig:cavalier}).
   \end{itemize}
 \end{itemize}
+
+\begin{figure}[ht]
+  \centering
+  \label{fig:ss-domination}
+  \includegraphics[width=4cm]{fig/ss-domination.png}
+  \caption{Commande: \texttt{java -jar jarfile -d -n 6 -t 1 -f 4 -c 3}}
+\end{figure}
 
 
 \section{Question 4: Les chevaliers minimum}
@@ -184,19 +218,38 @@ menacer tout l'échiquier:
   figure (\ref{fig:cavalier}), sauf les cases déjà occupées par les cavaliers.
 \end{itemize}
 
+\begin{figure}[ht]
+  \centering
+  \label{fig:ss-knights}
+  \includegraphics[width=4cm]{fig/ss-knights.png}
+  \caption{Commande: \texttt{java -jar jarfile -mk -n 6}}
+\end{figure}
+
+
+
+
 
 \section{Question 5: La surveillance de musée}
 
 Ici le problème est essentiellement le même, appliqué à la
-surveillance d'un musée.
+surveillance d'un musée. Nos quatre pièces peuvent s'orienter Nord,
+Sud, Est et Ouest.
 
-\newpage
 
 \appendix
 
 \section{Code Listing}
 
 \lstinputlisting[language=Java]{../src/main/java/chocolatte/App.java}
-
+\newpage
+\lstinputlisting[language=Java]{../src/main/java/chocolatte/Board.java}
+\newpage
+\lstinputlisting[language=Java]{../src/main/java/chocolatte/Independence.java}
+\newpage
+\lstinputlisting[language=Java]{../src/main/java/chocolatte/Domination.java}
+\newpage
+\lstinputlisting[language=Java]{../src/main/java/chocolatte/MinimalKnights.java}
+\newpage
+\lstinputlisting[language=Java]{../src/main/java/chocolatte/Museum.java}
 
 \end{document}
