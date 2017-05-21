@@ -12,6 +12,9 @@ import org.chocosolver.solver.variables.IntVar;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+import java.io.*;
+
+
 // Argparse
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -52,6 +55,8 @@ public class App {
             .type(Integer.class)
             .help("Number of knights to place on board")
             .setDefault(2);
+        parser.addArgument("--file")
+            .help("File to read the museum from");
         parser.epilog("Usage with Gradle: \n$ gradle run -PappArgs=\"['-flag1', '-arg2 x', 'option3']\"");
         Namespace ns = null;
         try {
@@ -69,12 +74,19 @@ public class App {
         int rook = ns.getInt("t");
         int bishop = ns.getInt("f");
         int knight = ns.getInt("c");
-
+        boolean museum = ns.getBoolean("m");
         Board chessBoard = new Board(boardSize, rook, bishop, knight);
         Solution sol = null;
 
-        if (ns.getBoolean("m")) {
-            chessBoard.createMuseum();
+
+        if (museum) {
+            try {
+                FileInputStream input;
+                input = new FileInputStream(ns.getString("file"));
+                chessBoard.createMuseum(input);
+            } catch(FileNotFoundException s) {
+                System.out.println("File does Not Exist Please Try Again: ");
+            }
             Museum min = new Museum(chessBoard);
             sol = min.exec();
             chessBoard.printMuseum(sol);

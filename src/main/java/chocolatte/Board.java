@@ -14,6 +14,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+import java.io.*;
+
 
 public class Board {
     /* Public attributes, accessible to our solvers */
@@ -31,7 +33,7 @@ public class Board {
     public IntVar totalKnights;
     public BoolVar[][] knightsLocation;
     // Museum
-    public Boolean[][] museumModel;
+    public boolean[][] museumModel;
     public IntVar[][] museum;
 
     public void createPieces() {
@@ -170,27 +172,52 @@ public class Board {
         }
     }
 
-    public void createMuseum() {
-        this.boardSize = 7;
-        // Boolean[][] arr = {
-        //     {false, false, false, false, false},
-        //     {false,  true,  true,  true, false},
-        //     {false,  true, false,  true, false},
-        //     {false,  true,  true,  true, false},
-        //     {false, false, false, false, false}
-        // };
-        Boolean[][] arr = {
-            {false, false, false, false, false, false, false},
-            {false,  true,  true,  true, false,  true, false},
-            {false,  true, false,  true, false, false, false},
-            {false,  true,  true,  true,  true,  true, false},
-            {false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false}
-        };
+    public void createMuseum(FileInputStream file) {
+        // IMPROVE: read file only once - first time is used here to
+        // know the dimension.
+        int size = 0;
+        try {
+            char current = (char) file.read();
+            while (current != '\n') {
+                size++;
+                current = (char) file.read();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        boolean[][] arr = new boolean[size][size];
+
+        try {
+            file.getChannel().position(0);
+        } catch (IOException e) {
+            System.out.println(e);
+
+        }
+
+        try {
+            char current;
+            int row = 0;
+            int column = 0;
+            while (file.available() > 0) {
+                current = (char) file.read();
+                if (current == ' ') {
+                    arr[row][column] = true;
+                }
+                if (current == '\n') {
+                    row++;
+                    column = 0;
+                } else {
+                    column++;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.museumModel = arr;
-    
+
         this.museum = new IntVar[this.boardSize][this.boardSize];
         for (int i = 0; i < this.boardSize; ++i) {
             for (int j = 0; j < this.boardSize; ++j) {
